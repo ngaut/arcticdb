@@ -858,6 +858,13 @@ func filterGranule(filterExpr logicalplan.Expr, g *Granule) bool {
 				case *scalar.String:
 					return string(val.Value.Bytes()) > min.String()
 				}
+			case logicalplan.EqOp:
+				switch val := v.(type) {
+				case *scalar.Int64:
+					return val.Value == min.Int64()
+				case *scalar.String:
+					return string(val.Value.Bytes()) == min.String()
+				}
 			}
 
 		case logicalplan.LiteralExpr:
@@ -868,6 +875,8 @@ func filterGranule(filterExpr logicalplan.Expr, g *Granule) bool {
 					return min.Int64() < v.Value
 				case logicalplan.GTOp:
 					return max.Int64() > v.Value
+				case logicalplan.EqOp:
+					return max.Int64() == v.Value
 				}
 			case *scalar.String:
 				switch expr.Op {
@@ -875,6 +884,8 @@ func filterGranule(filterExpr logicalplan.Expr, g *Granule) bool {
 					return min.String() < string(v.Value.Bytes())
 				case logicalplan.GTOp:
 					return max.String() > string(v.Value.Bytes())
+				case logicalplan.EqOp:
+					return max.String() == string(v.Value.Bytes())
 				}
 			}
 		}
